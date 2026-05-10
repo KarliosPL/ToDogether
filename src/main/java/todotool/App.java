@@ -2,26 +2,34 @@ package todotool;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import todotool.controller.EditorController;
-import todotool.ui.EditorView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import todotool.controller.MainController;
 
 public class App extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        EditorView editorView = new EditorView();
-        EditorController editorController = new EditorController(editorView);
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
+        Parent root = loader.load();
 
-        editorView.setController(editorController);
+        MainController mainController = loader.getController();
 
-        Scene scene = new Scene(editorView.getRoot(), 480, 500);
+        Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                mainController.addTask();
+                keyEvent.consume();
+            }
+        });
 
-        editorView.setupGlobalKeyBindings(scene);
-
-        stage.setTitle("Todotool");
-        stage.setScene(scene);
-        stage.show();
+        primaryStage.setTitle("Todotool");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
