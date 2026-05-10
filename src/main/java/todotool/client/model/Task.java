@@ -1,4 +1,4 @@
-package todotool.model;
+package todotool.client.model;
 
 public class Task {
     public String text;

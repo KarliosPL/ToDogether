@@ -1,14 +1,12 @@
-package todotool.view;
+package todotool.client.view;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import todotool.controller.MainController;
-import todotool.model.Task;
+import todotool.client.controller.MainController;
+import todotool.client.model.Task;
 
 public class TaskView extends HBox {
 

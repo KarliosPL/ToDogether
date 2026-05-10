@@ -1,4 +1,4 @@
-package todotool.controller;
+package todotool.client.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -6,8 +6,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
-import todotool.model.Task;
-import todotool.view.TaskView;
+import todotool.client.model.Task;
+import todotool.client.view.TaskView;
 
 public class MainController {
 

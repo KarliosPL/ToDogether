@@ -26,7 +26,7 @@ tasks.withType<JavaCompile> {
 }
 
 application {
-    mainClass.set("todotool.App")
+    mainClass.set("todotool.client.Client")
 }
 
 javafx {

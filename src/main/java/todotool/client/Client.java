@@ -1,4 +1,4 @@
-package todotool;
+package todotool.client;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -7,9 +7,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import todotool.controller.MainController;
+import todotool.client.controller.MainController;
 
-public class App extends Application {
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -30,9 +35,21 @@ public class App extends Application {
         primaryStage.setTitle("Todotool");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        connectToServer();
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void connectToServer() {
+        try {
+            Socket socket = new Socket("localhost", 5000);
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Nie udało się połączyć z serwerem.");
+        }
     }
 }
