@@ -1,13 +1,15 @@
 package todotool.client.controller;
 
+import todotool.client.view.TaskView;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
-import todotool.client.model.Task;
-import todotool.client.view.TaskView;
+import todotool.shared.Task;
+
+import java.util.List;
 
 public class MainController {
 
@@ -37,21 +39,36 @@ public class MainController {
         });
     }
 
-    public void addTask() {
+    public void addTask(Task task) {
         Node focusedNode = mainLayout.getScene().getFocusOwner();
         TaskView focusedView = getViewFromNode(focusedNode);
 
         if (focusedView != null) {
             int currentIndex = tasksList.indexOf(focusedView.getTask());
-            tasksList.add(currentIndex + 1, Task.createEmpty());
+            tasksList.add(currentIndex + 1, task);
         } else {
-            tasksList.add(Task.createEmpty());
+            tasksList.add(task);
+        }
+    }
+
+    public void updateTask(Task updatedTask) {
+        for (int i = 0; i < tasksList.size(); i++) {
+            Task existingTask = tasksList.get(i);
+            if (existingTask.equals(updatedTask)) {
+                tasksList.set(i, updatedTask);
+                return;
+            }
         }
     }
 
     public void removeTask(Task task) {
         focusPreviousTask(task);
         tasksList.remove(task);
+    }
+
+    public void reloadTasks(List<Task> tasks) {
+        tasksList.removeAll();
+        tasksList.addAll(tasks);
     }
 
     private TaskView getViewFromNode(Node node) {
