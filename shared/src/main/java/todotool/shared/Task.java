@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class Task implements Serializable {
-    UUID uuid;
+    public UUID uuid;
     public String text;
     public boolean completed;
 

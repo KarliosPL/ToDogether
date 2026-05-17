@@ -1,5 +1,6 @@
 package todotool.client.controller;
 
+import todotool.client.Client;
 import todotool.client.view.TaskView;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -9,10 +10,15 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import todotool.shared.Task;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import java.util.List;
 
 public class MainController {
 
+
+    private ObjectOutputStream oos;
     @FXML private VBox mainLayout;
     @FXML private VBox tasksContainer;
 
@@ -63,6 +69,22 @@ public class MainController {
 
     public void removeTask(Task task) {
         focusPreviousTask(task);
+        if (oos != null) {
+            try {
+                oos.reset();
+                oos.writeObject(new todotool.shared.NetworkMessage(todotool.shared.NetworkMessage.Action.DELETE, task));
+                oos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setObjectOutputStream(ObjectOutputStream oos) {
+        this.oos = oos;
+    }
+
+    public void removeTaskFromServer(Task task) {
         tasksList.remove(task);
     }
 

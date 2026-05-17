@@ -38,6 +38,7 @@ public class TaskView extends HBox {
     }
 
     private void setupListeners() {
+
         textField.textProperty().addListener((obs, oldText, newText) -> task.text = newText);
 
         textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {

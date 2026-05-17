@@ -25,6 +25,7 @@ public class Client extends Application {
 
         MainController mainController = loader.getController();
 
+
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
@@ -36,6 +37,8 @@ public class Client extends Application {
             Socket socket = new Socket("localhost", 1337);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+            mainController.setObjectOutputStream(objectOutputStream);
 
             scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
@@ -82,6 +85,11 @@ public class Client extends Application {
                         case UPDATE -> {
                             javafx.application.Platform.runLater(() ->
                                     mainController.updateTask(networkMessage.task)
+                            );
+                        }
+                        case DELETE -> {
+                            javafx.application.Platform.runLater(() ->
+                                    mainController.removeTaskFromServer(networkMessage.task)
                             );
                         }
                     }
