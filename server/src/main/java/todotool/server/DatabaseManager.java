@@ -66,7 +66,8 @@ public class DatabaseManager {
             pstmt.setString(1, task.text);
             pstmt.setInt(2, task.completed ? 1 : 0);
             pstmt.setString(3, task.uuid.toString());
-            pstmt.executeUpdate();
+            int rows = pstmt.executeUpdate();
+            if (rows == 0) System.out.println("[DB] updateTask: nie znaleziono uuid " + task.uuid);
         } catch (SQLException e) {
             e.printStackTrace();
         }
