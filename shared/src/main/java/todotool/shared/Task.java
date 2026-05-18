@@ -17,4 +17,17 @@ public class Task implements Serializable {
     public static Task createEmpty() {
         return new Task(UUID.randomUUID(), "", false);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task)) return false;
+        Task other = (Task) o;
+        return this.uuid.equals(other.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
 }
