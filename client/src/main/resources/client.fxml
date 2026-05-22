@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="todotool.client.controller.ClientController">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <HBox spacing="10">
+        <TextField fx:id="newTaskInput" HBox.hgrow="ALWAYS" onAction="#handleAddTask"/>
+        <Button text="Dodaj" onAction="#handleAddTask" />
+    </HBox>
+    <ListView fx:id="listView" VBox.vgrow="ALWAYS" />
+</VBox>

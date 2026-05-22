@@ -31,9 +31,6 @@ public class Server {
                     clients.add(clientHandler);
                     threadPool.execute(clientHandler);
                 }
-                else {
-                    System.out.println("Odrzucono połączenie. Osiągnięto limit 4 klientów.");
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,5 +45,10 @@ public class Server {
                 System.err.println("Failed to broadcast: " + e.getMessage());
             }
         }
+    }
+
+    public static void removeClient(ClientHandler client) {
+        clients.remove(client);
+        System.out.println("Klient odłączony. Pozostało: " + clients.size());
     }
 }

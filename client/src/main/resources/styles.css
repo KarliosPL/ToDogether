@@ -1,26 +1,57 @@
-.task-view {
-    -fx-background-color: white;
-    -fx-background-radius: 4;
-
-    -fx-padding: 2;
-
-    -fx-border-width: 2px;
-    -fx-border-color: white;
-    -fx-border-radius: 4;
+.root {
+    -fx-background-color: #f3f4f6;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
-.task-view .text-field {
+.list-view {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
-    -fx-background-radius: 0;
-
-    -fx-padding: 2;
-
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
-    -fx-font-size: 14px;
-    -fx-text-fill: #333333;
+}
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 4 10;
+}
+.list-cell:empty {
+    -fx-padding: 0;
 }
 
-.task-view:focus-within {
-    -fx-border-color: red;
+.todo-card {
+    -fx-background-color: white;
+    -fx-background-radius: 4;
+    -fx-padding: 10 15;
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 4;
+    -fx-padding: 2;
+    -fx-font-size: 14px;
+}
+.text-field:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.todo-text-field {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.button {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #2563eb;
+}
+
+.delete-button {
+    -fx-background-color: #ef4444;
+}
+.delete-button:hover {
+    -fx-background-color: #dc2828;
 }

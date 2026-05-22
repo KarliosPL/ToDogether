@@ -27,23 +27,26 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            sendMessage(new NetworkMessage(NetworkMessage.Action.SYNC_ALL,
+            sendMessage(new NetworkMessage(NetworkMessage.Action.SYNC,
                     taskManager.getAllTasks()));
 
             while (!socket.isClosed()) {
                 NetworkMessage message = (NetworkMessage) objectInputStream.readObject();
 
-                switch (message.action) {
+                switch (message.action()) {
                     case ADD -> {
-                        taskManager.addTask(message.task);
+                        taskManager.addTask(message.todos().getFirst());
+                        System.out.println("ADD message received.");
                         onBroadcast.accept(message);
                     }
                     case UPDATE -> {
-                        taskManager.updateTask(message.task);
+                        taskManager.updateTask(message.todos().getFirst());
+                        System.out.println("UPDATE message received.");
                         onBroadcast.accept(message);
                     }
                     case DELETE -> {
-                        taskManager.deleteTask(message.task);
+                        taskManager.deleteTask(message.todos().getFirst());
+                        System.out.println("DELETE message received.");
                         onBroadcast.accept(message);
                     }
                     default -> { }
@@ -52,11 +55,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Odłączono klienta: " + socket.getInetAddress());
         } finally {
-            try {
-                if (!socket.isClosed()) socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            cleanup();
         }
     }
 
@@ -64,5 +63,16 @@ public class ClientHandler implements Runnable {
         objectOutputStream.reset();
         objectOutputStream.writeObject(message);
         objectOutputStream.flush();
+    }
+
+    private void cleanup() {
+        Server.removeClient(this); // Remove from the global list
+        try {
+            if (objectInputStream != null) objectInputStream.close();
+            if (objectOutputStream != null) objectOutputStream.close();
+            if (socket != null && !socket.isClosed()) socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

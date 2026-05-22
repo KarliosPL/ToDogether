@@ -1,40 +1,40 @@
 package todotool.server;
 
-import todotool.shared.Task;
+import todotool.shared.Todo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskManager {
-    private List<Task> tasks = new CopyOnWriteArrayList<>();
+    private List<Todo> todos = new CopyOnWriteArrayList<>();
     private DatabaseManager databaseManager;
 
     public TaskManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        this.tasks.addAll(databaseManager.getAllTasks());
+        this.todos.addAll(databaseManager.getAllTasks());
     }
 
-    public void addTask(Task task) {
-        tasks.add(task);
-        databaseManager.insertTask(task);
+    public void addTask(Todo todo) {
+        todos.add(todo);
+        databaseManager.insertTask(todo);
     }
 
-    public void updateTask(Task task) {
-        int index = tasks.indexOf(task);
+    public void updateTask(Todo todo) {
+        int index = todos.indexOf(todo);
         if (index >= 0) {
-            tasks.set(index, task);
-            databaseManager.updateTask(task);
+            todos.set(index, todo);
+            databaseManager.updateTask(todo);
         }
     }
 
-    public void deleteTask(Task task) {
-        if (tasks.remove(task)) {
-            databaseManager.deleteTask(task);
+    public void deleteTask(Todo todo) {
+        if (todos.remove(todo)) {
+            databaseManager.deleteTask(todo);
         }
     }
 
-    public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks);
+    public List<Todo> getAllTasks() {
+        return new ArrayList<>(todos);
     }
 }

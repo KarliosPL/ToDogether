@@ -1,6 +1,7 @@
 package todotool.server;
 
-import todotool.shared.Task;
+import todotool.shared.Todo;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,8 @@ public class DatabaseManager {
         }
     }
 
-    public static List<Task> getAllTasks() {
-        List<Task> tasks = new ArrayList<>();
+    public static List<Todo> getAllTasks() {
+        List<Todo> todos = new ArrayList<>();
         String sql = "SELECT * FROM tasks";
 
         try (Connection connection = DriverManager.getConnection(URL);
@@ -48,45 +49,45 @@ public class DatabaseManager {
                 UUID uuid = UUID.fromString(resultSet.getString("uuid"));
                 String text = resultSet.getString("text");
                 boolean completed = resultSet.getInt("completed") == 1;
-                tasks.add(new Task(uuid, text, completed));
+                todos.add(new Todo(uuid, text, completed));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return tasks;
+        return todos;
     }
 
-    public static void insertTask(Task task) {
+    public static void insertTask(Todo todo) {
         String sql = "INSERT INTO tasks(uuid, text, completed) VALUES(?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(URL);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, task.uuid.toString());
-            preparedStatement.setString(2, task.text);
-            preparedStatement.setInt(3, task.completed ? 1 : 0);
+            preparedStatement.setString(1, todo.uuid.toString());
+            preparedStatement.setString(2, todo.text);
+            preparedStatement.setInt(3, todo.completed ? 1 : 0);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void updateTask(Task task) {
+    public static void updateTask(Todo todo) {
         String sql = "UPDATE tasks SET text = ?, completed = ? WHERE uuid = ?";
         try (Connection connection = DriverManager.getConnection(URL);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, task.text);
-            preparedStatement.setInt(2, task.completed ? 1 : 0);
-            preparedStatement.setString(3, task.uuid.toString());
+            preparedStatement.setString(1, todo.text);
+            preparedStatement.setInt(2, todo.completed ? 1 : 0);
+            preparedStatement.setString(3, todo.uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void deleteTask(Task task) {
+    public static void deleteTask(Todo todo) {
         String sql = "DELETE FROM tasks WHERE uuid = ?";
         try (Connection connection = DriverManager.getConnection(URL);
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, task.uuid.toString());
+            preparedStatement.setString(1, todo.uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
