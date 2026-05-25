@@ -16,7 +16,7 @@ public class TodoListViewModel {
     private final NetworkClient network = new NetworkClient();
 
     public TodoListViewModel() {
-        network.connect("localhost", 2137, this::handleIncoming);
+
     }
 
     public ObservableList<TodoItemViewModel> getItems() { return items; }
@@ -74,5 +74,9 @@ public class TodoListViewModel {
                 .filter(i -> i.getOriginalTodo().uuid.equals(uuid))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void connectToServer(String ipAccess) {
+        network.connect("localhost", 2137, this::handleIncoming);
     }
 }
