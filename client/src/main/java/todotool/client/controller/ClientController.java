@@ -30,6 +30,9 @@ public class ClientController {
     @FXML private ProgressBar pomodoroProgress;
     @FXML private Button pomodoroButton;
 
+    @FXML private Button saveLocalButton;
+    @FXML private Button loadLocalButton;
+
     @FXML private TextField serverIpInput;
     @FXML private Button connectButton;
     @FXML private Label connectionStatusLabel;
@@ -140,6 +143,30 @@ public class ClientController {
 
             connectButton.setDisable(true);
             serverIpInput.setDisable(true);
+
+            saveLocalButton.setDisable(true);
+            loadLocalButton.setDisable(true);
         }
+
+
+
+    }
+
+    @FXML
+    private void handleSaveLocal() {
+        viewModel.saveLocalData();
+
+        connectionStatusLabel.setText("Zapisano lokalnie!");
+        connectionStatusLabel.setStyle("-fx-text-fill: #3b82f6; -fx-font-size: 11px; -fx-font-weight: bold;"); // Kolor niebieski
+    }
+
+    @FXML
+    private void handleLoadLocal() {
+        viewModel.loadLocalData();
+
+        updateTaskProgress();
+
+        connectionStatusLabel.setText("Wczytano z dysku!");
+        connectionStatusLabel.setStyle("-fx-text-fill: #3b82f6; -fx-font-size: 11px; -fx-font-weight: bold;");
     }
 }

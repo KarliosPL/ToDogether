@@ -7,6 +7,8 @@ import todotool.client.NetworkClient;
 import todotool.shared.NetworkMessage;
 import todotool.shared.NetworkMessage.Action;
 import todotool.shared.Todo;
+import java.io.*;
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,9 +16,9 @@ import java.util.UUID;
 public class TodoListViewModel {
     private final ObservableList<TodoItemViewModel> items = FXCollections.observableArrayList();
     private final NetworkClient network = new NetworkClient();
-
+    private static final String LOCAL_SAVE_FILE = "offline_tasks.dat";
     public TodoListViewModel() {
-
+        loadLocalData();
     }
 
     public ObservableList<TodoItemViewModel> getItems() { return items; }
@@ -77,6 +79,33 @@ public class TodoListViewModel {
     }
 
     public void connectToServer(String ipAccess) {
-        network.connect("localhost", 2137, this::handleIncoming);
+        network.connect(ipAccess, 2137, this::handleIncoming);
+    }
+    public void saveLocalData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOCAL_SAVE_FILE))) {
+            List<Todo> todosToSave = new ArrayList<>();
+            for (TodoItemViewModel item : items) {
+                todosToSave.add(item.getOriginalTodo());
+            }
+            oos.writeObject(todosToSave);
+        } catch (IOException e) {
+            System.err.println("Nie udało się zapisać lokalnych danych: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void loadLocalData() {
+        File file = new File(LOCAL_SAVE_FILE);
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                List<Todo> loadedTodos = (List<Todo>) ois.readObject();
+                items.clear();
+                for (Todo t : loadedTodos) {
+                    items.add(new TodoItemViewModel(t));
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Nie udało się wczytać lokalnych danych: " + e.getMessage());
+            }
+        }
     }
 }
