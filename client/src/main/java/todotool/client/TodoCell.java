@@ -49,12 +49,6 @@ public class TodoCell extends ListCell<TodoItemViewModel> {
             }
         });
 
-        checkBox.setOnAction(e -> {
-            if (getItem() != null) {
-                viewModel.commitUpdate(getItem());
-            }
-        });
-
         textField.focusedProperty().addListener((obs, old, isFocused) -> {
             if (getItem() != null) {
                 getItem().setFocused(isFocused);
