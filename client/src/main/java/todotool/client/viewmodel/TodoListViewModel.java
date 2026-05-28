@@ -17,6 +17,7 @@ public class TodoListViewModel {
     private final ObservableList<TodoItemViewModel> items = FXCollections.observableArrayList();
     private final NetworkClient network = new NetworkClient();
     private static final String LOCAL_SAVE_FILE = "offline_tasks.dat";
+    public static final UUID CLIENT_ID = UUID.randomUUID();
     public TodoListViewModel() {
         loadLocalData();
     }
@@ -26,16 +27,16 @@ public class TodoListViewModel {
     public void addNewTask(String text) {
         Todo newTodo = new Todo(text);
         items.add(new TodoItemViewModel(newTodo));
-        network.send(new NetworkMessage(Action.ADD, List.of(newTodo)));
+        network.send(new NetworkMessage(Action.ADD, CLIENT_ID, List.of(newTodo)));
     }
 
     public void remove(TodoItemViewModel item) {
         items.remove(item);
-        network.send(new NetworkMessage(Action.DELETE, List.of(item.getOriginalTodo())));
+        network.send(new NetworkMessage(Action.DELETE, CLIENT_ID, List.of(item.getOriginalTodo())));
     }
 
     public void commitUpdate(TodoItemViewModel item) {
-        network.send(new NetworkMessage(Action.UPDATE, List.of(item.getOriginalTodo())));
+        network.send(new NetworkMessage(Action.UPDATE, CLIENT_ID, List.of(item.getOriginalTodo())));
     }
 
     private void handleIncoming(NetworkMessage msg) {
@@ -59,12 +60,29 @@ public class TodoListViewModel {
                 }
                 case UPDATE -> {
                     Todo incoming = msg.todos().getFirst();
+
+                    System.out.println("[Klient PRZYCHODZĄCE] Otrzymano UPDATE. lockedBy z serwera: " + incoming.lockedBy);
                     TodoItemViewModel target = findById(incoming.uuid);
                     if (target != null) {
                         if (!target.isFocused()) {
                             target.textProperty().set(incoming.text);
                         }
                         target.completedProperty().set(incoming.completed);
+                        target.lockedByProperty().set(incoming.lockedBy);
+                    }
+                }
+                case LOCK -> {
+                    Todo incoming = msg.todos().getFirst();
+                    TodoItemViewModel target = findById(incoming.uuid);
+                    if (target != null && !msg.senderId().equals(CLIENT_ID)) {
+                        target.lockedByProperty().set(msg.senderId());
+                    }
+                }
+                case UNLOCK -> {
+                    Todo incoming = msg.todos().getFirst();
+                    TodoItemViewModel target = findById(incoming.uuid);
+                    if (target != null) {
+                        target.lockedByProperty().set(null);
                     }
                 }
             }
@@ -79,7 +97,7 @@ public class TodoListViewModel {
     }
 
     public void connectToServer(String ipAccess) {
-        network.connect(ipAccess, 2137, this::handleIncoming);
+        network.connect(ipAccess, 6767, this::handleIncoming);
     }
     public void saveLocalData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOCAL_SAVE_FILE))) {
@@ -108,4 +126,12 @@ public class TodoListViewModel {
             }
         }
     }
+    public void sendLock(TodoItemViewModel item) {
+        network.send(new NetworkMessage(Action.LOCK, CLIENT_ID, List.of(item.getOriginalTodo())));
+    }
+
+    public void sendUnlock(TodoItemViewModel item) {
+        network.send(new NetworkMessage(Action.UNLOCK, CLIENT_ID, List.of(item.getOriginalTodo())));
+    }
+
 }

@@ -37,8 +37,13 @@ public class NetworkClient {
                 out.reset();
                 out.writeObject(msg);
                 out.flush();
+            } catch (java.net.SocketException e) {
+                // Ten blok "wyłapuje" błąd zamkniętego gniazda podczas wyłączania aplikacji
+                // i zapobiega drukowaniu wielkiego czerwonego tekstu w konsoli.
+                System.out.println("Nie wysłano wiadomości (połączenie z serwerem zostało zamknięte).");
             } catch (Exception e) {
-                e.printStackTrace();
+                // Zwykłe błędy nadal będą się wyświetlać
+                System.err.println("Inny błąd podczas wysyłania: " + e.getMessage());
             }
         }
     }

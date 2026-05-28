@@ -1,15 +1,20 @@
 package todotool.client.viewmodel;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import todotool.shared.Todo;
 
+import java.util.UUID;
+
 public class TodoItemViewModel {
     private final Todo todo;
     private final StringProperty text = new SimpleStringProperty();
     private final BooleanProperty completed = new SimpleBooleanProperty();
+    private final ObjectProperty<UUID> lockedBy = new SimpleObjectProperty<>();
 
     private boolean isFocused = false;
 
@@ -21,6 +26,8 @@ public class TodoItemViewModel {
         this.text.addListener((obs, old, newVal) -> this.todo.text = newVal);
         this.completed.addListener((obs, old, newVal) -> this.todo.completed = newVal);
     }
+
+    public ObjectProperty<UUID> lockedByProperty() { return lockedBy; }
 
     public StringProperty textProperty() { return text; }
     public BooleanProperty completedProperty() { return completed; }

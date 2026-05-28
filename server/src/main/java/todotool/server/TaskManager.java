@@ -4,6 +4,7 @@ import todotool.shared.Todo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskManager {
@@ -36,5 +37,18 @@ public class TaskManager {
 
     public List<Todo> getAllTasks() {
         return new ArrayList<>(todos);
+    }
+
+    public List<Todo> unlockTasksForClient(UUID clientId) {
+        List<Todo> unlockedTasks = new ArrayList<>();
+
+        for (Todo todo : todos) {
+            if (clientId.equals(todo.lockedBy)) {
+                todo.lockedBy = null;
+                databaseManager.updateTask(todo);
+                unlockedTasks.add(todo);
+            }
+        }
+        return unlockedTasks;
     }
 }

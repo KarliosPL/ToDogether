@@ -30,6 +30,7 @@ public class DatabaseManager {
                     "uuid TEXT PRIMARY KEY, " +
                     "text TEXT, " +
                     "completed INTEGER" +
+                    "lockedBy TEXT" +
                     ");";
             statement.execute(sql);
         } catch (SQLException e) {
@@ -49,7 +50,9 @@ public class DatabaseManager {
                 UUID uuid = UUID.fromString(resultSet.getString("uuid"));
                 String text = resultSet.getString("text");
                 boolean completed = resultSet.getInt("completed") == 1;
-                todos.add(new Todo(uuid, text, completed));
+                String lockedByStr = resultSet.getString("lockedBy");
+                UUID lockedBy = lockedByStr != null ? UUID.fromString(lockedByStr) : null;
+                todos.add(new Todo(uuid, text, completed, lockedBy));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,12 +61,13 @@ public class DatabaseManager {
     }
 
     public static void insertTask(Todo todo) {
-        String sql = "INSERT INTO tasks(uuid, text, completed) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO tasks(uuid, text, completed, lockedBy) VALUES(?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(URL);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, todo.uuid.toString());
             preparedStatement.setString(2, todo.text);
             preparedStatement.setInt(3, todo.completed ? 1 : 0);
+            preparedStatement.setString(4, todo.lockedBy != null ? todo.lockedBy.toString() : null);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,7 +75,7 @@ public class DatabaseManager {
     }
 
     public static void updateTask(Todo todo) {
-        String sql = "UPDATE tasks SET text = ?, completed = ? WHERE uuid = ?";
+        String sql = "UPDATE tasks SET text = ?, completed = ?, lockedBy = ? WHERE uuid = ?";
         try (Connection connection = DriverManager.getConnection(URL);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, todo.text);

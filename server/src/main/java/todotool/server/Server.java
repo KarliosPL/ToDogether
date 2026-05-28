@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private static final int PORT = 2137;
+    private static final int PORT = 6767;
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private static TaskManager taskManager;
 

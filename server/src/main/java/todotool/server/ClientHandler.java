@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ClientHandler implements Runnable {
@@ -14,6 +15,7 @@ public class ClientHandler implements Runnable {
     private ObjectInputStream objectInputStream;
     private TaskManager taskManager;
     private Consumer<NetworkMessage> onBroadcast;
+    private UUID clientId;
 
     public ClientHandler(Socket socket, TaskManager taskManager, Consumer<NetworkMessage> onBroadcast)
             throws IOException {
@@ -27,26 +29,29 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            sendMessage(new NetworkMessage(NetworkMessage.Action.SYNC,
-                    taskManager.getAllTasks()));
+            sendMessage(new NetworkMessage(NetworkMessage.Action.SYNC, null, taskManager.getAllTasks()));
 
             while (!socket.isClosed()) {
                 NetworkMessage message = (NetworkMessage) objectInputStream.readObject();
 
+                if (this.clientId == null && message.senderId() != null) {
+                    this.clientId = message.senderId();
+                }
+
                 switch (message.action()) {
                     case ADD -> {
                         taskManager.addTask(message.todos().getFirst());
-                        System.out.println("ADD message received.");
                         onBroadcast.accept(message);
                     }
                     case UPDATE -> {
                         taskManager.updateTask(message.todos().getFirst());
-                        System.out.println("UPDATE message received.");
                         onBroadcast.accept(message);
                     }
                     case DELETE -> {
                         taskManager.deleteTask(message.todos().getFirst());
-                        System.out.println("DELETE message received.");
+                        onBroadcast.accept(message);
+                    }
+                    case LOCK, UNLOCK -> {
                         onBroadcast.accept(message);
                     }
                     default -> { }
@@ -67,6 +72,15 @@ public class ClientHandler implements Runnable {
 
     private void cleanup() {
         Server.removeClient(this); // Remove from the global list
+
+        if (this.clientId != null && this.taskManager != null) {
+            java.util.List<todotool.shared.Todo> unlockedTasks = taskManager.unlockTasksForClient(this.clientId);
+
+            if (!unlockedTasks.isEmpty()) {
+                System.out.println("Zwalniam porzucone blokady klienta: " + this.clientId);
+                onBroadcast.accept(new NetworkMessage(NetworkMessage.Action.UPDATE, null, unlockedTasks));
+            }
+        }
         try {
             if (objectInputStream != null) objectInputStream.close();
             if (objectOutputStream != null) objectOutputStream.close();

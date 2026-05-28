@@ -61,7 +61,7 @@ public class ClientController {
                     }
                 }
             }
-            updateTaskProgress(); // Przelicz pasek, gdy zadanie zostanie usunięte lub dodane
+            updateTaskProgress();
         });
 
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateTimer()));
