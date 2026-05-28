@@ -35,6 +35,20 @@ public class TodoCell extends ListCell<TodoItemViewModel> {
             }
         });
 
+        checkBox.focusedProperty().addListener((obs, old, isFocused) -> {
+            if (getItem() != null) {
+                getItem().setFocused(isFocused);
+                if (isFocused) {
+                    getItem().lockedByProperty().set(TodoListViewModel.CLIENT_ID);
+                    viewModel.sendLock(getItem());
+                } else {
+                    getItem().lockedByProperty().set(null);
+                    viewModel.sendUnlock(getItem());
+                    viewModel.commitUpdate(getItem());
+                }
+            }
+        });
+
         checkBox.setOnAction(e -> {
             if (getItem() != null) {
                 viewModel.commitUpdate(getItem());
